@@ -255,11 +255,26 @@ struct RepForm: View {
         Form {
             repCountSection
             rangeOfMotionSection
+            tempoSection
             restSection
         }
         .navigationTitle("Rep")
     }
     
+    var tempoSection: some View {
+        Section("Tempo") {
+            HStack {
+                Text("Concentric")
+            }
+            HStack {
+                Text("Pause")
+            }
+            HStack {
+                Text("Eccentric")
+            }
+        }
+    }
+
     var rep: Rep {
         reps[index]
     }
@@ -348,17 +363,65 @@ struct SetForm: View {
                                 RoundedRectangle(cornerRadius: 5)
                                     .foregroundStyle(Color(.systemFill))
                             )
-                        if rep.includeRest {
-                            Text("\(rep.restTimeInSeconds)s rest")
-                                .foregroundStyle(Color(.label))
+//                        if rep.includeRest {
+                            HStack(spacing: 0) {
+                                Text("C ")
+                                    .foregroundStyle(.secondary)
+                                Text("1")
+                                    .fontDesign(.monospaced)
+                                Text("s")
+                            }
+                            .foregroundStyle(Color(.label))
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .foregroundStyle(Color(.systemFill))
+                            )
+                        HStack(spacing: 0) {
+                            Text("P ")
+                                .foregroundStyle(.secondary)
+                            Text("2")
                                 .fontDesign(.monospaced)
-                                .padding(.vertical, 5)
-                                .padding(.horizontal, 8)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .foregroundStyle(Color(.systemFill))
-                                )
+                            Text("s")
                         }
+                        .foregroundStyle(Color(.label))
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .foregroundStyle(Color(.systemFill))
+                        )
+                        HStack(spacing: 0) {
+                            Text("E ")
+                                .foregroundStyle(.secondary)
+                            Text("2")
+                                .fontDesign(.monospaced)
+                            Text("s")
+                        }
+                        .foregroundStyle(Color(.label))
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .foregroundStyle(Color(.systemFill))
+                        )
+                        HStack(spacing: 0) {
+                            Text("R ")
+                                .foregroundStyle(.secondary)
+                            Text("10")
+                                .fontDesign(.monospaced)
+                            Text("s")
+                        }
+                        .foregroundStyle(Color(.label))
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .foregroundStyle(Color(.systemFill))
+                        )
+
+//                        }
                     }
                 }
             }
