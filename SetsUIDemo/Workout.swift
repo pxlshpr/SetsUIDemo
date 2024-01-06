@@ -339,18 +339,31 @@ struct SetForm: View {
                     HStack {
                         Text("\(rep.number)")
                             .foregroundStyle(Color(.label))
-                            .frame(width: 50)
+                            .frame(width: 20)
                         Text(rep.type.shortName)
                             .foregroundStyle(Color(.label))
-                        Spacer()
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .foregroundStyle(Color(.systemFill))
+                            )
                         if rep.includeRest {
-                            Text("\(rep.restTimeInSeconds) s")
+                            Text("\(rep.restTimeInSeconds)s rest")
                                 .foregroundStyle(Color(.label))
+                                .fontDesign(.monospaced)
+                                .padding(.vertical, 5)
+                                .padding(.horizontal, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .foregroundStyle(Color(.systemFill))
+                                )
                         }
                     }
                 }
             }
         }
+        .listStyle(.plain)
         .navigationTitle("Set")
     }
 }
