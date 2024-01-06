@@ -14,21 +14,37 @@ import SwiftUI
 /// [ ] Let user save the location they're working out at too, so that we know what locataions X machine is at
 
 struct Workout: View {
+    @State var showingExercise = false
     var body: some View {
         NavigationStack {
             Form {
-                NavigationLink {
-                    Exercise()
+                Button {
+                    showingExercise = true
                 } label: {
-                    Text("Walking Lunges")
+                    HStack {
+                        Text("Walking Lunges")
+                        Spacer()
+                        Text("3 sets")
+                    }
+                    .foregroundStyle(Color(.label))
                 }
-                NavigationLink {
-                    
+                Button {
+                    showingExercise = true
                 } label: {
-                    Text("Leg Extensions")
+                    HStack {
+                        Text("Leg Extensions")
+                        Spacer()
+                        Text("5 sets")
+                    }
+                    .foregroundStyle(Color(.label))
                 }
             }
             .navigationTitle("Workout")
+            .sheet(isPresented: $showingExercise) {
+                NavigationView {
+                    Exercise()
+                }
+            }
         }
     }
 }
