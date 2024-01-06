@@ -131,7 +131,7 @@ struct SetCell: View {
     var body: some View {
         HStack {
             completionButton
-            infoButton
+            link
         }
     }
     
@@ -146,9 +146,10 @@ struct SetCell: View {
         .buttonStyle(.plain)
     }
     
-    var infoButton: some View {
-        Button {
-            setShowingFormFor = set
+    var link: some View {
+        NavigationLink {
+            SetForm()
+//            setShowingFormFor = set
         } label: {
             HStack {
                 repsText
@@ -249,20 +250,16 @@ struct RepForm: View {
 
     let index: Int
     @Binding var reps: [Rep]
-//    @Binding var rep: Rep
     
     var body: some View {
-//        NavigationView {
-            Form {
-                Section {
-                    repRow
-                    rangeOfMotionRow
-                    includeRestRow
-                    restTimeRow
-                }
+        Form {
+            Section {
+                repRow
             }
-            .navigationTitle("Rep")
-//        }
+            rangeOfMotionSection
+            restSection
+        }
+        .navigationTitle("Rep")
     }
     
     var rep: Rep {
@@ -277,52 +274,38 @@ struct RepForm: View {
         }
     }
     
-    var rangeOfMotionRow: some View {
-        HStack {
-            Picker("Range of Motion", selection: $reps[index].type) {
+    var rangeOfMotionSection: some View {
+        Section("Range of Motion") {
+            Picker("", selection: $reps[index].type) {
                 ForEach(RepType.allCases, id: \.self) {
                     Text($0.shortName)
                 }
             }
             .multilineTextAlignment(.trailing)
-            .pickerStyle(.menu)
+            .pickerStyle(.wheel)
         }
     }
     
-    var includeRestRow: some View {
-        HStack {
-            Toggle("Intra-set Rest", isOn: $reps[index].includeRest)
-        }
-    }
-    
-    @ViewBuilder
-    var restTimeRow: some View {
-        if rep.includeRest {
+    var restSection: some View {
+        Section("Rest") {
             HStack {
-                Text("Rest (seconds)")
-                Spacer()
-                TextField("", value: $reps[index].restTimeInSeconds, formatter: NumberFormatter.init())
-                    .multilineTextAlignment(.trailing)
+                Toggle("Include", isOn: $reps[index].includeRest)
+            }
+            if rep.includeRest {
+                HStack {
+                    Text("Seconds")
+                    Spacer()
+                    TextField("", value: $reps[index].restTimeInSeconds, formatter: NumberFormatter.init())
+                        .multilineTextAlignment(.trailing)
+                }
             }
         }
     }
+    
 }
 
 struct SetForm: View {
-    @State var reps: [Rep] = [
-        .init(number: 1),
-        .init(number: 2),
-        .init(number: 3),
-        .init(number: 4),
-        .init(number: 5),
-        .init(number: 6),
-        .init(number: 7),
-        .init(number: 8),
-        .init(number: 9),
-        .init(number: 10),
-    ]
-    
-    @State var presentedRepIndex: RepIndex? = nil
+    @State var reps: [Rep] = MockReps
     
     struct RepIndex: Identifiable {
         let id: Int
@@ -332,35 +315,42 @@ struct SetForm: View {
     }
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(Array(zip(reps.indices, reps)), id: \.0) { index, rep in
-                    NavigationLink {
-//                        presentedRepIndex = RepIndex(index)
-                        RepForm(index: index, reps: $reps)
-                    } label: {
-                        HStack {
-                            Text("\(rep.number)")
+        List {
+            ForEach(Array(zip(reps.indices, reps)), id: \.0) { index, rep in
+                NavigationLink {
+                    RepForm(index: index, reps: $reps)
+                } label: {
+                    HStack {
+                        Text("\(rep.number)")
+                            .foregroundStyle(Color(.label))
+                            .frame(width: 50)
+                        Text(rep.type.shortName)
+                            .foregroundStyle(Color(.label))
+                        Spacer()
+                        if rep.includeRest {
+                            Text("\(rep.restTimeInSeconds) s")
                                 .foregroundStyle(Color(.label))
-                                .frame(width: 50)
-                            Text(rep.type.shortName)
-                                .foregroundStyle(Color(.label))
-                            Spacer()
-                            if rep.includeRest {
-                                Text("\(rep.restTimeInSeconds) s")
-                                    .foregroundStyle(Color(.label))
-                            }
                         }
                     }
                 }
             }
-            .navigationTitle("Set")
-            .sheet(item: $presentedRepIndex) { index in
-                RepForm(index: index.id, reps: $reps)
-            }
         }
+        .navigationTitle("Set")
     }
 }
+
+let MockReps: [Rep] = [
+    .init(number: 1),
+    .init(number: 2),
+    .init(number: 3),
+    .init(number: 4),
+    .init(number: 5),
+    .init(number: 6),
+    .init(number: 7),
+    .init(number: 8),
+    .init(number: 9),
+    .init(number: 10),
+]
 
 //struct SetRepsForm: View {
 //    
@@ -402,5 +392,19 @@ struct SetForm: View {
 }
 
 #Preview("Set") {
-    SetForm()
+    NavigationView {
+        SetForm()
+    }
+}
+
+struct RepFormTest: View {
+    @State var reps = MockReps
+    var body: some View {
+        NavigationView {
+            RepForm(index: 1, reps: $reps)
+        }
+    }
+}
+#Preview("Rep") {
+    RepFormTest()
 }
