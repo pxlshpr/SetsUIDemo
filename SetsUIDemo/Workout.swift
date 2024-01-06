@@ -226,22 +226,22 @@ enum RepType: CaseIterable {
     var name: String {
         switch self {
         case .fullRangeOfMotion:
-            "Full ROM"
+            "Full Range of Motion"
         case .partialLongLength:
-            "Partial ROM (Long Length)"
+            "Lengthened Partials"
         case .partialShortLength:
-            "Partial ROM (Half Length)"
+            "Shortened Partials"
         }
     }
     
     var shortName: String {
         switch self {
         case .fullRangeOfMotion:
-            "Full ROM"
+            "Full"
         case .partialLongLength:
-            "Partial (Long Length)"
+            "Lengthened"
         case .partialShortLength:
-            "Partial (Half Length)"
+            "Shortened"
         }
     }
 }
@@ -253,9 +253,7 @@ struct RepForm: View {
     
     var body: some View {
         Form {
-            Section {
-                repRow
-            }
+            repCountSection
             rangeOfMotionSection
             restSection
         }
@@ -266,23 +264,41 @@ struct RepForm: View {
         reps[index]
     }
     
-    var repRow: some View {
-        HStack {
-            Text("Rep")
-            Spacer()
-            Text("\(rep.number)")
+    var repCountSection: some View {
+        Section {
+            HStack {
+                Text("Rep")
+                Spacer()
+                Text("\(rep.number)")
+            }
         }
     }
     
+    @State var showingRangeOfMotionInfo = false
+    
     var rangeOfMotionSection: some View {
-        Section("Range of Motion") {
+        var header: some View {
+            Text("Range of Motion")
+        }
+        
+        var footer: some View {
+            Button("Learn More…") {
+                showingRangeOfMotionInfo = true
+            }
+            .font(.footnote)
+        }
+        
+        return Section(header: header, footer: footer) {
             Picker("", selection: $reps[index].type) {
                 ForEach(RepType.allCases, id: \.self) {
-                    Text($0.shortName)
+                    Text($0.name)
                 }
             }
             .multilineTextAlignment(.trailing)
             .pickerStyle(.wheel)
+        }
+        .sheet(isPresented: $showingRangeOfMotionInfo) {
+            RangeOfMotionInfo()
         }
     }
     
@@ -339,6 +355,25 @@ struct SetForm: View {
     }
 }
 
+struct RangeOfMotionInfo: View {
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Full Range of Motion") {
+                    Text("Full range of motion is defined as the act of moving as far as anatomically possible during a given exercise.")
+                }
+                Section("Lengthened Partials") {
+                    Text("Lengthened partials, or long-length partials, are half reps repeatedly performed at the portion of the lift when the muscles are most lengthened.\n\nFor example, the bottom half of the bicep curl or the bottom half of the squat. When performing long-length partials, ideally 50% of the rep should be performed.")
+                }
+                Section("Shortened Partials") {
+                    Text("Shortened partials, or short-length partials, are half reps where 50% of the rep is performed repeatedly when the muscle is at its shortest part.\n\nFor example, the top of bicep curls or the top half of a squat.")
+                }
+            }
+            .navigationTitle("Ranges of Motion")
+        }
+    }
+}
+
 let MockReps: [Rep] = [
     .init(number: 1),
     .init(number: 2),
@@ -351,35 +386,6 @@ let MockReps: [Rep] = [
     .init(number: 9),
     .init(number: 10),
 ]
-
-//struct SetRepsForm: View {
-//    
-//    @State var reps: [Rep] = [
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//        .init(),
-//    ]
-//    
-//    var body: some View {
-//        NavigationView {
-//            Form {
-//                ForEach(Array(zip(reps.indices, $reps)), id: \.0) { index, $rep in
-//                    Section {
-//                        RepSection(index: index, rep: $rep)
-//                    }
-//                }
-//            }
-//            .navigationTitle("Set")
-//        }
-//    }
-//}
 
 #Preview("Workout") {
     Workout()
@@ -405,6 +411,11 @@ struct RepFormTest: View {
         }
     }
 }
+
 #Preview("Rep") {
     RepFormTest()
+}
+
+#Preview("ROM Info") {
+    RangeOfMotionInfo()
 }
